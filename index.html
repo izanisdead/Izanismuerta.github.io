@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HappyPaws - Max</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#eef8ff;
+  color:#23334d;
+}
+.app{
+  width:min(100%,520px);
+  min-height:100vh;
+  margin:auto;
+  padding:14px;
+  background:linear-gradient(#dff5ff,#f8fcff 55%,#eaf8ed);
+}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+h1{margin:0;font-size:26px}
+.coins{
+  background:#fff;
+  padding:9px 13px;
+  border-radius:20px;
+  box-shadow:0 3px 10px #0001;
+  font-weight:bold;
+}
+.room{
+  height:350px;
+  position:relative;
+  overflow:hidden;
+  border-radius:25px;
+  background:
+    radial-gradient(circle at 20% 20%,#fff8 0 5%,transparent 6%),
+    linear-gradient(#a9e2f7 0 63%,#d6b47b 63% 100%);
+  box-shadow:0 5px 18px #0002;
+}
+.window{
+  position:absolute;
+  width:105px;height:90px;
+  left:22px;top:25px;
+  background:#9eddf4;
+  border:9px solid #fff;
+  box-shadow:inset 0 0 0 4px #b8d2df;
+}
+.sun{
+  position:absolute;
+  right:30px;top:25px;
+  width:52px;height:52px;
+  background:#ffd66b;border-radius:50%;
+}
+.rug{
+  position:absolute;
+  left:15%;bottom:25px;
+  width:70%;height:75px;
+  background:#f7d9a2;
+  border-radius:50%;
+}
+.dog{
+  position:absolute;
+  left:42%;bottom:48px;
+  font-size:105px;
+  cursor:pointer;
+  user-select:none;
+  transition:left .65s,transform .25s;
+  filter:drop-shadow(0 8px 4px #0003);
+}
+.bone{
+  position:absolute;
+  right:18%;bottom:75px;
+  font-size:38px;
+  cursor:pointer;
+  transition:all .5s;
+}
+.name{
+  position:absolute;
+  bottom:9px;left:50%;
+  transform:translateX(-50%);
+  border:0;
+  background:#fff;
+  border-radius:18px;
+  padding:7px 20px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin:12px 0;
+}
+.stat{
+  background:#fff;
+  border-radius:16px;
+  padding:10px 7px;
+  text-align:center;
+  box-shadow:0 3px 10px #0001;
+  font-size:13px;
+}
+.bar{
+  height:8px;
+  margin-top:6px;
+  background:#e5ebf0;
+  border-radius:10px;
+  overflow:hidden;
+}
+.fill{
+  height:100%;
+  border-radius:10px;
+  transition:width .3s;
+}
+.buttons{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+}
+button.action{
+  border:0;
+  border-radius:18px;
+  background:#fff;
+  padding:14px;
+  font-weight:bold;
+  font-size:15px;
+  cursor:pointer;
+  box-shadow:0 3px 10px #0001;
+}
+.action:hover{transform:translateY(-2px)}
+.icon{font-size:28px;display:block;margin-bottom:4px}
+.message{
+  text-align:center;
+  color:#687991;
+  min-height:24px;
+  margin:10px 0;
+}
+.panel{
+  display:none;
+  background:#fff;
+  border-radius:24px;
+  padding:20px;
+  box-shadow:0 5px 20px #0002;
+}
+.panel h2{text-align:center}
+.panel p{
+  color:#687991;
+  line-height:1.5;
+  text-align:center;
+}
+.panel button,.panel a{
+  display:block;
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border:0;
+  border-radius:15px;
+  font-size:15px;
+  font-weight:bold;
+  text-align:center;
+  text-decoration:none;
+  cursor:pointer;
+}
+.alert{background:#e0f6e8;color:#23334d}
+.call{background:#ffe0e0;color:#23334d}
+.back{background:#edf1f5;color:#23334d}
+#status{text-align:center;color:#687991;font-size:13px;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<header>
+  <div>
+    <h1>HappyPaws 🐾</h1>
+    <small>Mi mascota virtual</small>
+  </div>
+  <div class="coins">🪙 <span id="coins">100</span></div>
+</header>
+
+<div id="game">
+
+  <div class="room">
+    <div class="window"></div>
+    <div class="sun"></div>
+    <div class="rug"></div>
+
+    <div id="dog" class="dog">🐶</div>
+    <div id="bone" class="bone">🦴</div>
+
+    <!-- El nombre abre la zona de ayuda después de 3 toques -->
+    <button id="dogName" class="name">Max</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      🍖 Hambre <b id="foodText">70</b>%
+      <div class="bar"><div id="foodBar" class="fill" style="width:70%;background:#ffb45b"></div></div>
+    </div>
+
+    <div class="stat">
+      ❤️ Felicidad <b id="happyText">80</b>%
+      <div class="bar"><div id="happyBar" class="fill" style="width:80%;background:#ff8da2"></div></div>
+    </div>
+
+    <div class="stat">
+      ⚡ Energía <b id="energyText">75</b>%
+      <div class="bar"><div id="energyBar" class="fill" style="width:75%;background:#64c98a"></div></div>
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button class="action" id="feed"><span class="icon">🍖</span>Dar comida</button>
+    <button class="action" id="play"><span class="icon">🎾</span>Jugar</button>
+    <button class="action" id="walk"><span class="icon">🐾</span>Pasear</button>
+    <button class="action" id="sleep"><span class="icon">💤</span>Dormir</button>
+  </div>
+
+  <div id="message" class="message">Toca a Max para acariciarlo ❤️</div>
+
+</div>
+
+<div id="helpPanel" class="panel">
+  <div style="font-size:55px;text-align:center">🛟</div>
+  <h2>Zona de ayuda</h2>
+
+  <p>
+    Si estás en una situación de peligro, busca un lugar seguro
+    y contacta a una persona adulta de confianza o a los servicios
+    de emergencia de tu zona.
+  </p>
+
+  <button class="alert" id="prepare">🚨 Preparar alerta</button>
+
+  <a class="call" href="tel:123">📞 Llamar a emergencias</a>
+
+  <button class="back" id="back">🐶 Volver al juego</button>
+
+  <div id="status"></div>
+</div>
+
+</div>
+
+<script>
+let food=70;
+let happy=80;
+let energy=75;
+let coins=100;
+
+let taps=0;
+let tapTimer=null;
+
+const $=id=>document.getElementById(id);
+
+function clamp(n){
+  return Math.max(0,Math.min(100,n));
+}
+
+function update(){
+  food=clamp(food);
+  happy=clamp(happy);
+  energy=clamp(energy);
+
+  $("foodText").textContent=food;
+  $("happyText").textContent=happy;
+  $("energyText").textContent=energy;
+  $("coins").textContent=coins;
+
+  $("foodBar").style.width=food+"%";
+  $("happyBar").style.width=happy+"%";
+  $("energyBar").style.width=energy+"%";
+}
+
+function say(text){
+  $("message").textContent=text;
+}
+
+function bounce(){
+  $("dog").style.transform="translateY(-18px) scale(1.08)";
+  setTimeout(()=>{
+    $("dog").style.transform="";
+  },250);
+}
+
+$("dog").addEventListener("click",()=>{
+  happy+=4;
+  coins+=1;
+  bounce();
+  say("Max está feliz de verte ❤️");
+  update();
+});
+
+$("feed").addEventListener("click",()=>{
+  food+=20;
+  energy+=4;
+  coins+=3;
+  bounce();
+  say("¡Max está comiendo! 🍖");
+  update();
+});
+
+$("play").addEventListener("click",()=>{
+  happy+=15;
+  energy-=10;
+  food-=4;
+  coins+=5;
+
+  $("dog").style.left=(10+Math.random()*72)+"%";
+  $("bone").style.right=(10+Math.random()*70)+"%";
+
+  say("¡Max está jugando! 🎾");
+  update();
+});
+
+$("walk").addEventListener("click",()=>{
+  energy-=6;
+  happy+=8;
+  food-=3;
+  coins+=6;
+
+  $("dog").style.left=(5+Math.random()*82)+"%";
+
+  say("¡Max salió a pasear! 🐾");
+  update();
+});
+
+$("sleep").addEventListener("click",()=>{
+  energy+=25;
+  happy+=3;
+  say("Max está descansando... 💤");
+  update();
+});
+
+$("bone").addEventListener("click",()=>{
+  $("feed").click();
+});
+
+$("dogName").addEventListener("click",()=>{
+  taps++;
+  clearTimeout(tapTimer);
+
+  tapTimer=setTimeout(()=>{
+    taps=0;
+  },1500);
+
+  if(taps>=3){
+    taps=0;
+    $("game").style.display="none";
+    $("helpPanel").style.display="block";
+  }
+});
+
+$("back").addEventListener("click",()=>{
+  $("helpPanel").style.display="none";
+  $("game").style.display="block";
+});
+
+$("prepare").addEventListener("click",()=>{
+  $("status").textContent=
+    "Alerta preparada. En una versión real se configuraría un contacto de emergencia autorizado.";
+});
+
+update();
+</script>
+
+</body>
+</html>
+
+dame un enlace a este juego 
